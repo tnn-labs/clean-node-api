@@ -36,7 +36,11 @@
         "groups": ["module", "/^@shared/", ["parent", "sibling", "index"]],
         "alphabetize": { "order": "asc", "ignoreCase": true}
       }
-    ]
+    ],
+    "max-classes-per-file": [
+      "error",
+      { "ignoreExpressions": true, "max": 2 }
+  ]
   },
   "settings": {
     "import/resolver": {
