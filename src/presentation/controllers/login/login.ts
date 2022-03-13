@@ -1,4 +1,4 @@
-import { MissingParamError } from '../../errors';
+import { InvalidParamError, MissingParamError } from '../../errors';
 import { badRequest } from '../../helpers/http-helper';
 import { Controller, HttpRequest, HttpResponse } from '../../protocols';
 import { EmailValidator } from '../signup/signup-protocols';
@@ -12,7 +12,12 @@ export class LoginController implements Controller {
 
   // eslint-disable-next-line consistent-return
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
-    this.emailValidator.isValid(httpRequest.body.email);
+    const isValid = this.emailValidator.isValid(httpRequest.body.email);
+
+    if (!isValid) {
+      return badRequest(new InvalidParamError('email'));
+    }
+
     if (!httpRequest.body.email) {
       return badRequest(new MissingParamError('email'));
     }
