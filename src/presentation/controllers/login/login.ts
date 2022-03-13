@@ -12,17 +12,19 @@ export class LoginController implements Controller {
 
   // eslint-disable-next-line consistent-return
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
-    const isValid = this.emailValidator.isValid(httpRequest.body.email);
+    const { email, password } = httpRequest.body;
+
+    const isValid = this.emailValidator.isValid(email);
 
     if (!isValid) {
       return badRequest(new InvalidParamError('email'));
     }
 
-    if (!httpRequest.body.email) {
+    if (!email) {
       return badRequest(new MissingParamError('email'));
     }
 
-    if (!httpRequest.body.password) {
+    if (!password) {
       return badRequest(new MissingParamError('password'));
     }
   }
