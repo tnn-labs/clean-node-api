@@ -23,7 +23,6 @@ export class LoginController implements Controller {
     this.authentication = authentication;
   }
 
-  // eslint-disable-next-line consistent-return
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const requiredFieds = ['email', 'password'];
