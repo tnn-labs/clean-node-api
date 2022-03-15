@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import {
   InvalidParamError,
   MissingParamError,
@@ -10,6 +11,7 @@ import {
   AddAccount,
   AccountModel,
   HttpRequest,
+  Validation,
 } from './signup-protocols';
 
 const makeEmailValidator = (): EmailValidator => {
@@ -45,21 +47,37 @@ const makeAddAccount = (): AddAccount => {
   }
   return new AddAccountStub();
 };
+
+const makeValidation = (): Validation => {
+  class ValidationStub implements Validation {
+    validate(input: any): Error {
+      return null;
+    }
+  }
+  return new ValidationStub();
+};
 interface SutTypes {
   sut: SignUpController;
   emailValidatorStub: EmailValidator;
   addAccountStub: AddAccount;
+  validationSub: Validation;
 }
 
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator();
   const addAccountStub = makeAddAccount();
-  const sut = new SignUpController(emailValidatorStub, addAccountStub);
+  const validationSub = makeValidation();
+  const sut = new SignUpController(
+    emailValidatorStub,
+    addAccountStub,
+    validationSub,
+  );
 
   return {
     sut,
     emailValidatorStub,
     addAccountStub,
+    validationSub,
   };
 };
 
@@ -212,5 +230,19 @@ describe('SignUp Controller', () => {
     // expect(httpResponse.statusCode).toBe(200);
     // expect(httpResponse.body).toEqual(makeFakeAccount());
     expect(httpResponse).toEqual(ok(makeFakeAccount()));
+  });
+
+  /* ---------------------------------------------------------
+    esse teste garante a integração entre os componentes 
+    `LoginController` e `Validation`. Quando o handle for 
+    chamado, internamente ele chamará o `validate` recebendo
+    os valores do body
+  ---------------------------------------------------------- */
+  test('Should call Validation with correct value', async () => {
+    const { sut, validationSub } = makeSut();
+    const validateSpy = jest.spyOn(validationSub, 'validate');
+    const httpRequest = makeFakeRequest();
+    await sut.handle(httpRequest);
+    expect(validateSpy).toHaveBeenCalledWith(httpRequest.body);
   });
 });
