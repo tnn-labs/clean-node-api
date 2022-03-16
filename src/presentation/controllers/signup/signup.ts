@@ -1,4 +1,4 @@
-import { InvalidParamError, MissingParamError } from '../../errors';
+import { InvalidParamError } from '../../errors';
 import { badRequest, ok, serverError } from '../../helpers/http-helper';
 import {
   Controller,
@@ -32,19 +32,6 @@ export class SignUpController implements Controller {
 
       if (error) {
         return badRequest(error);
-      }
-
-      const requiredFields = [
-        'name',
-        'email',
-        'password',
-        'passwordConfirmation',
-      ];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const field of requiredFields) {
-        if (!httpRequest.body[field]) {
-          return badRequest(new MissingParamError(field));
-        }
       }
 
       const { name, password, passwordConfirmation, email } = httpRequest.body;
