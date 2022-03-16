@@ -245,4 +245,19 @@ describe('SignUp Controller', () => {
     await sut.handle(httpRequest);
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body);
   });
+
+  /* ---------------------------------------------------------
+    esse teste garante que se o Validation retornar um erro,
+    deve ser exibido um erro do tipo 400
+  ---------------------------------------------------------- */
+  test('Should return 400 if Validation returns an error', async () => {
+    const { sut, validationSub } = makeSut();
+    jest
+      .spyOn(validationSub, 'validate')
+      .mockReturnValueOnce(new MissingParamError('any_field'));
+    const httpResponse = await sut.handle(makeFakeRequest());
+    expect(httpResponse).toEqual(
+      badRequest(new MissingParamError('any_field')),
+    );
+  });
 });
