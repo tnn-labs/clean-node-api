@@ -11,10 +11,10 @@ export class CompareFieldsValidation implements Validation {
     this.fieldToCompareName = fieldToCompareName;
   }
 
-  // eslint-disable-next-line consistent-return
   validate(input: any): Error {
     if (input[this.fieldName] !== input[this.fieldToCompareName]) {
       return new InvalidParamError(this.fieldToCompareName);
     }
+    return null;
   }
 }
