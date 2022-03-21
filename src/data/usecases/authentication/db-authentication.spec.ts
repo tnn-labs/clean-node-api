@@ -45,10 +45,24 @@ describe('DbAuthentication UseCase', () => {
     esse teste garante a integração entre os componentes 
     `DbAuthentication` e `LoadAccountByEmailRepository`
   ---------------------------------------------------------- */
-  test('should call LoadAccountByEmailRepository with correct email', async () => {
+  test('Should call LoadAccountByEmailRepository with correct email', async () => {
     const { loadAccountByEmailRepositoryStub, sut } = makeSut();
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'load');
     await sut.auth(makeFakeAuthentication());
     expect(loadSpy).toHaveBeenCalledWith('any_email@email.com');
+  });
+
+  /* ---------------------------------------------------------
+    se o repositório exibir uma exceção, deve ser repassada
+  ---------------------------------------------------------- */
+  test('Should throw if LoadAccountByEmailRepository throws', async () => {
+    const { loadAccountByEmailRepositoryStub, sut } = makeSut();
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'load')
+      .mockReturnValueOnce(
+        new Promise((resolve, reject) => reject(new Error())),
+      );
+    const promise = sut.auth(makeFakeAuthentication());
+    await expect(promise).rejects.toThrow();
   });
 });
