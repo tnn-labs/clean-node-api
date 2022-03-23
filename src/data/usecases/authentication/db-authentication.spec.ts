@@ -84,7 +84,8 @@ describe('DbAuthentication UseCase', () => {
   });
 
   /* ---------------------------------------------------------
-    se o repositório exibir uma exceção, deve ser repassada
+    se o LoadAccountByEmailRepository exibir uma exceção, 
+    deve ser repassada
   ---------------------------------------------------------- */
   test('Should throw if LoadAccountByEmailRepository throws', async () => {
     const { loadAccountByEmailRepositoryStub, sut } = makeSut();
@@ -122,15 +123,13 @@ describe('DbAuthentication UseCase', () => {
   });
 
   /* ---------------------------------------------------------
-    se o repositório exibir uma exceção, deve ser repassada
+    se o HashComparer exibir uma exceção, deve ser repassada
   ---------------------------------------------------------- */
   test('Should throw if HashComparer throws', async () => {
     const { hashComparerStub, sut } = makeSut();
     jest
       .spyOn(hashComparerStub, 'compare')
-      .mockReturnValueOnce(
-        new Promise((resolve, reject) => reject(new Error())),
-      );
+      .mockReturnValueOnce(new Promise((_, reject) => reject(new Error())));
     const promise = sut.auth(makeFakeAuthentication());
     await expect(promise).rejects.toThrow();
   });
@@ -155,5 +154,17 @@ describe('DbAuthentication UseCase', () => {
     const generateSpy = jest.spyOn(tokenGeneratorStub, 'generate');
     await sut.auth(makeFakeAuthentication());
     expect(generateSpy).toHaveBeenCalledWith('any_id');
+  });
+
+  /* ---------------------------------------------------------
+    se o TokenGenerator exibir uma exceção, deve ser repassada
+  ---------------------------------------------------------- */
+  test('Should throw if TokenGenerator throws', async () => {
+    const { tokenGeneratorStub, sut } = makeSut();
+    jest
+      .spyOn(tokenGeneratorStub, 'generate')
+      .mockReturnValueOnce(new Promise((_, reject) => reject(new Error())));
+    const promise = sut.auth(makeFakeAuthentication());
+    await expect(promise).rejects.toThrow();
   });
 });
