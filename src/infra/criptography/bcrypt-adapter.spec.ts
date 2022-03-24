@@ -25,7 +25,7 @@ describe('Bcrypt Adapter', () => {
   });
 
   /* -------------------------------------------------- 
-    fluxo de sucesso
+    [bcrypt.hash] fluxo de sucesso
   -------------------------------------------------- */
   test('Should return a valid hash on hash success', async () => {
     const sut = makeSut();
@@ -33,7 +33,10 @@ describe('Bcrypt Adapter', () => {
     expect(hash).toBe('hash');
   });
 
-  test('Should throw if bcrypt throws', async () => {
+  /* -------------------------------------------------- 
+    [bcrypt.hash] em caso de exceção
+  -------------------------------------------------- */
+  test('Should throw if bcrypt.hash throws', async () => {
     const sut = makeSut();
     jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => {
       throw new Error();
@@ -43,8 +46,8 @@ describe('Bcrypt Adapter', () => {
   });
 
   /* -------------------------------------------------- 
-    deve chamar o método compare com os mesmos valores 
-    que o sut recebeu
+    [bcrypt.compare] deve chamar o método compare com 
+    os mesmos valores que o sut recebeu
   -------------------------------------------------- */
   test('Should call compare with correct values', async () => {
     const sut = makeSut();
@@ -54,7 +57,7 @@ describe('Bcrypt Adapter', () => {
   });
 
   /* -------------------------------------------------- 
-    fluxo de sucesso
+    [bcrypt.compare] fluxo de sucesso
   -------------------------------------------------- */
   test('Should return true when compare succeeds', async () => {
     const sut = makeSut();
@@ -63,12 +66,24 @@ describe('Bcrypt Adapter', () => {
   });
 
   /* -------------------------------------------------- 
-    em caso de falha
+    [bcrypt.compare] em caso de falha
   -------------------------------------------------- */
   test('Should return false when compare fails', async () => {
     const sut = makeSut();
     jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => false);
     const isValid = await sut.compare('any_value', 'any_hash');
     expect(isValid).toBe(false);
+  });
+
+  /* -------------------------------------------------- 
+    [bcrypt.compare] em caso de exceção
+  -------------------------------------------------- */
+  test('Should throw if bcrypt.compare throws', async () => {
+    const sut = makeSut();
+    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = sut.compare('any_value', 'any_hash');
+    await expect(promise).rejects.toThrow();
   });
 });
