@@ -1,4 +1,4 @@
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 
 import { MongoHelper } from '../helpers/mongo-helper';
 import { AccountMongoRepository } from './account';
@@ -23,6 +23,9 @@ describe('Acccount Mongo Repository', () => {
     return new AccountMongoRepository();
   };
 
+  /* ---------------------------------------------------
+  add - fluxo de sucesso
+  --------------------------------------------------- */
   test('Should return an account on add success', async () => {
     const sut = makeSut();
     const account = await sut.add({
@@ -37,6 +40,9 @@ describe('Acccount Mongo Repository', () => {
     expect(account.password).toBe('any_password');
   });
 
+  /* ---------------------------------------------------
+  loadByEmail
+  --------------------------------------------------- */
   test('Should return an account on loadByEmail success', async () => {
     const sut = makeSut();
     await accountCollection.insertOne({
@@ -52,9 +58,32 @@ describe('Acccount Mongo Repository', () => {
     expect(account.password).toBe('any_password');
   });
 
+  /* ---------------------------------------------------
+  loadByEmail - fluxo de erro
+  --------------------------------------------------- */
   test('Should return null if loadByEmail fails', async () => {
     const sut = makeSut();
     const account = await sut.loadByEmail('any_email@mail.com');
     expect(account).toBeFalsy();
+  });
+
+  /* ---------------------------------------------------
+  depois que chamar o  método `UpdateAccessTokenRepository` 
+  o token do usuário será atualizado
+  --------------------------------------------------- */
+  test('Should update the account accessToken on updateAccessToken success', async () => {
+    const sut = makeSut();
+    const fakeAccount = await accountCollection.insertOne({
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      password: 'any_password',
+    });
+    expect(fakeAccount[0]?.accessToken).toBe(undefined);
+    await sut.updateAccessToken(fakeAccount.insertedId.toString(), 'any_token');
+    const account = await accountCollection.findOne({
+      _id: new ObjectId(fakeAccount.insertedId.toString()),
+    });
+    expect(account).toBeTruthy();
+    expect(account.accessToken).toBe('any_token');
   });
 });
