@@ -1,13 +1,13 @@
 /* eslint-disable max-classes-per-file */
 import { MissingParamError, ServerError } from '../../errors';
 import { ok, serverError, badRequest } from '../../helpers/http/http-helper';
-import { SignUpController } from './signup';
+import { SignUpController } from './signup-controller';
 import {
   AddAccount,
   AccountModel,
   HttpRequest,
   Validation,
-} from './signup-protocols';
+} from './signup-controller-protocols';
 
 const makeFakeAccount = (): AccountModel => ({
   id: 'valid_id',
